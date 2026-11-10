@@ -1,0 +1,127 @@
+
+.map-section {
+  padding: 100px 8%;
+  background: #f8f5ed;
+}
+
+.map-heading {
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+.map-heading span {
+  color: #a66b45;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+}
+
+.map-heading h2 {
+  margin-top: 15px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 42px;
+  font-weight: 500;
+  color: #49382d;
+}
+
+.map-heading p {
+  margin-top: 15px;
+  color: #75675a;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.map-container {
+  max-width: 1250px;
+  height: 550px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid #e5d9ca;
+  box-shadow: 0 10px 35px rgba(73, 56, 45, 0.08);
+}
+
+.cafe-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.cafe-popup img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+
+.cafe-image-marker {
+  background: transparent;
+  border: none;
+}
+
+.cafe-image-pin {
+  width: 58px;
+  height: 58px;
+  border: 3px solid #f8f5ed;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  transition: transform 0.3s ease;
+}
+
+.cafe-image-pin img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cafe-image-pin:hover {
+  transform: scale(1.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .map-section {
+    padding: 70px 6%;
+  }
+
+  .map-heading h2 {
+    font-size: 32px;
+  }
+
+  .map-container {
+    height: 400px;
+  }
+  
+.cafe-marker {
+  background: transparent;
+  border: none;
+}
+
+.cafe-marker-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #49382d;
+  border: 3px solid #f8f5ed;
+  border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  transition: 0.3s ease;
+}
+
+.cafe-marker-icon span {
+  font-size: 19px;
+}
+
+.cafe-marker-icon:hover {
+  transform: scale(1.15);
+}
+
+}
