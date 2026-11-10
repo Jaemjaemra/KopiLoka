@@ -1,30 +1,86 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { supabase } from "../lib/supabase";
+import { useNavigate } from "react-router-dom";
 import "./Discover.css";
 
-const cafes = [
-    {
-        name: "Zus Coffee",
-        location: "Kuala Lumpur,Malaysia",
-        description: "A cozy little corner for your favourite coffee moments.",
-        image: "https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=1200",
-    },
-    {
-        name: "Monsterbytes Cafe ",
-        location: "Batu Caves,Malaysia",
-        description: "A cozy little corner for your favourite coffee moments.",
-        image: "https://tse1.mm.bing.net/th/id/OIP.dmrsKtTLOCaG8De5hIrJFwHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
-    },
-    {
-        name: "AfterHours",
-        location: "Kuala Lumpur,Malaysia",
-        description: "A cozy little corner for your favourite coffee moments.",
-        image: "https://scontent.fkul8-3.fna.fbcdn.net/v/t39.30808-6/786930149_1036417985852422_8235795144973380567_n.jpg?stp=dst-jpg_tt6&cstp=mx1200x1200&ctp=s1200x1200&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=127cfc&_nc_ohc=2N2b8nN-_w0Q7kNvwG5DZuY&_nc_oc=AdowMdDSbDw3v8l-e0u63LvfGy7ZSGX_JeVGafd__Iq5GWxqUFVCFCaMuYnA-2YACZY&_nc_zt=23&_nc_ht=scontent.fkul8-3.fna&_nc_gid=q5x_00Xd39j90rCbs92Bfw&_nc_ss=7b2a8&oh=00_AQRqq6AXc_ctAD-ZXDeIOkOeccIu6foQ0eJnGpwwwI5BXQ&oe=6AF6333D",
-    },
-]; 
+type Cafe = {
+    id: string;
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    description: string;
+    image_url: string;
+};
 
 function Discover () {
+    const [cafes, setCafes] = useState<Cafe[]>([]);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const [savedCafes, setSavedCafes] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchCafes = async () => {
+            const { data, error } = await supabase
+              .from("cafes")
+              .select("id, name, address, city, state, description, image_url")
+              .eq("status", "approved")
+              .order("created_at", { ascending: true });
+
+              if (error) {
+                setError(error.message);
+              } else {
+                setCafes(data ?? []);
+              }
+
+              setLoading(false);
+        };
+
+        fetchCafes();
+    }, []);
+
+    useEffect(() => {
+        const fetchSavedCafes = async (userId: string) => {
+            const { data, error } = await supabase
+            .from ("saved_cafes")
+            .select ("cafe_id")
+            .eq("user_id", userId);
+
+            if (error) {
+                console.error("Failed to fetch favourites:", error.message);
+                return;
+            }
+
+            setSavedCafes(data.map((item ) => item.cafe_id));
+        };
+
+        const checkUser = async () => {
+            const {data: { session} } = await supabase.auth.getSession();
+
+            if(session) {
+                await fetchSavedCafes(session.user.id);
+            } else {
+                setSavedCafes([]);
+            }
+        };
+
+        checkUser(); 
+
+        const {
+            data: { subscription }, 
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session) {
+                fetchSavedCafes(session.user.id); 
+            } else {
+                setSavedCafes([]);
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
 
     const nextSlide = () => {
         setActiveIndex((current) => (current + 1) % cafes.length);
@@ -37,6 +93,50 @@ function Discover () {
     };
 
     const activeCafe = cafes[activeIndex]; 
+
+    const handleSaveCafe = async (cafeId: string) => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    navigate("/login");
+    return;
+  }
+
+  const isSaved = savedCafes.includes(cafeId);
+
+  if (isSaved) {
+    const { error } = await supabase
+      .from("saved_cafes")
+      .delete()
+      .eq("user_id", session.user.id)
+      .eq("cafe_id", cafeId);
+
+    if (error) {
+      console.error("Failed to remove favourite:", error.message);
+      return;
+    }
+
+    setSavedCafes((current) =>
+      current.filter((id) => id !== cafeId)
+    );
+  } else {
+    const { error } = await supabase
+      .from("saved_cafes")
+      .insert({
+        user_id: session.user.id,
+        cafe_id: cafeId,
+      });
+
+    if (error) {
+      console.error("Failed to save cafe:", error.message);
+      return;
+    }
+
+    setSavedCafes((current) => [...current, cafeId]);
+  }
+};
 
     return (
         <section className="discover" id="discover">
@@ -56,32 +156,66 @@ function Discover () {
                 </p>
             </motion.div>
 
+              {loading ? (
+                <p className="discover-message"> Loading cafes...</p>
+              ) : error ? (
+                 <p className="discover-message">
+                    Failed to load cafes: {error}
+                 </p>
+              ): cafes.length === 0 ? (
+                <p className="discover-message">
+                    No cafes available yet. Check back soon!
+                </p>
+              ):(
+
             <div className="carousel">
 
-                <button className="carousel-arrow prev" onClick={prevSlide}>
+                <button 
+                className="carousel-arrow prev" 
+                onClick={prevSlide}
+                type="button"
+                >
                    ☜
                 </button>
 
                 <div className="carousel-main">
                     <AnimatePresence mode= "wait">
                         <motion.div 
+                        
                           key={activeIndex}
                           className="carousel-featured"
                           style={{ 
-                            backgroundImage: `url("${activeCafe.image}")`,
+                            backgroundImage: `url("${activeCafe.image_url}")`,
                           }}
                           initial= {{ opacity: 0, scale: 1.05 }}
                           animate= {{ opacity: 1, scale: 1}}
                           exit= {{ opacity: 0, x: -40}}
                           transition={{ duration: 0.5}}
                           >
+                            <button
+                            type="button"
+                            className={`favorite-button ${
+                                savedCafes.includes(activeCafe.id) ? "saved" : ""
+                              }`}
+                              onClick={() => handleSaveCafe(activeCafe.id)}
+  aria-label={
+    savedCafes.includes(activeCafe.id)
+      ? "Remove from favourites"
+      : "Save to favourites"
+  }
+  aria-pressed={savedCafes.includes(activeCafe.id)}
+>
+  {savedCafes.includes(activeCafe.id) ? "♥" : "♡"}
+</button>
                             <motion.div 
                                 className="cafe-content"
                                 initial={{ opacity:0, y:25 }}
                                 animate={{ opacity: 1, y:0 }}
                                 transition={{ duration: 0.6, delay:0.2 }}
                                 >
-                                <span>{activeCafe.location}</span>
+                                <span>
+                                    {activeCafe.city}, {activeCafe.state}
+                                    </span>
                                 <h3>{activeCafe.name}</h3>
                                 <p>{activeCafe.description}</p>
                                 <motion.button 
@@ -97,7 +231,11 @@ function Discover () {
                     </AnimatePresence>
                 </div>
 
-                <button className="carousel-arrow next" onClick={nextSlide}>
+                <button 
+                  className="carousel-arrow next" 
+                  onClick={nextSlide}
+                  type="button"
+                  >
                   ☞
                 </button>
 
@@ -109,7 +247,9 @@ function Discover () {
                             index === activeIndex ? "active" : ""
                          }`}
                          onClick={() => setActiveIndex(index)}
-                         style={{backgroundImage: `url(${cafe.image})`}}
+                         style={{
+                            backgroundImage: `url(${cafe.image_url})`,
+                        }}
                          aria-label = {`View ${cafe.name}`}
                          initial= {{ opacity:0, x:25 }}
                          whileInView={{ opacity: 1, x:0}}
@@ -120,11 +260,13 @@ function Discover () {
                             duration: 0.5, 
                             delay: index * 0.12,
                          }}
+                         type ="button"
                          />
                     ))}
                 </div>
 
             </div>
+              )}
         </section>
     );
 }

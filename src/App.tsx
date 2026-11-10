@@ -6,6 +6,7 @@ import Discover from "./components/Discover";
 import About from "./components/About";
 import Map from "./components/Maps";
 import Login, { Register} from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import "./App.css";
 
@@ -27,6 +28,10 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      <Route element={<ProtectedRoute />}>
+      
+      </Route>
     </Routes>
   );
 }

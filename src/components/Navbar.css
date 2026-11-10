@@ -113,6 +113,12 @@
     opacity: 1;
 }
 
+.user-name {
+  font-size: 14px;
+  color: #6b3e2e;
+  font-weight: 500;
+}
+
 @media (max-width: 650px) {
   .navbar {
     padding: 20px 5%;
@@ -198,4 +204,9 @@
     opacity: 1;
 }
 
+.user-name {
+  font-size: 14px;
+  color: #6b3e2e;
+  font-weight: 500;
+}
 }

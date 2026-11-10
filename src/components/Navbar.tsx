@@ -1,12 +1,30 @@
 import "./Navbar.css";
 import logo from "../assets/Logo Kopiloka.png"
-import { Link } from "react-router-dom";
-import { useState, type MouseEvent, type CSSProperties } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, type MouseEvent, type CSSProperties, useEffect } from "react";
+import { supabase } from "../lib/supabase";
+import type { User } from "@supabase/supabase-js";
 
 function Navbar() {
   const [mousePosition, setMousePosition] = useState ({ x:50, y: 50});
+  const [user, setUser] = useState<User | null>(null);
 
-  const handleMouseMove = (e: MouseEvent<HTMLAnchorElement>) => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+    });
+
+    const {
+      data: { subscription }, 
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+  });
+     return () => subscription.unsubscribe();
+}, []);
+
+ const handleMouseMove = (e: MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
 
     setMousePosition({
@@ -20,6 +38,21 @@ function Navbar() {
      "--mouse-y": `${mousePosition.y}%`,
   } as CSSProperties;
 
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error){
+      console.error("Logout failed:", error.message);
+      return;
+    }
+
+    navigate("/");
+  };
+
+  const displayName = 
+    user?.user_metadata?.username || 
+    user?.email?.split("@")[0];
+
   return (
     <nav className="navbar">
       <div className="nav-links">
@@ -32,7 +65,23 @@ function Navbar() {
       </div>
 
       <div className="nav-actions">
-        <Link 
+        {user ?(
+          <>
+           <span className="user-name">
+             Hi, {displayName}
+           </span>
+
+            <button
+            className="login-nav-button"
+            onClick= {handleLogout}
+            onMouseMove={handleMouseMove}
+            style={buttonStyle}
+            >
+              <span> Logout </span>
+            </button>
+            </>
+        ) : (
+           <Link 
           to= "/login" 
           className="login-nav-button"
           onMouseMove={handleMouseMove}
@@ -40,7 +89,8 @@ function Navbar() {
           >
            <span> Login </span>
         </Link>
-
+        )}
+         
       <a href="#discover" className="nav-button">
         Explore Cafes
       </a>

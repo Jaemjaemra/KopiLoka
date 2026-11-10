@@ -99,18 +99,13 @@
     gap: 10px; 
   }
 
-  .coffee-video {
-    outline: 2px solid red;
-    background: rgba(255, 0, 0, 0.1);
-}
-
   .hero-content h1 {
     font-size: 45px;
   }
 
   .coffee-video {
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     height: 300px;
     object-fit: contain;
     display: block;
