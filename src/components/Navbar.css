@@ -1,34 +1,95 @@
+
 .navbar {
-    width: 100%;
-    padding: 24px 7%; 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between;
-    background: #f8f5ed;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  padding: 24px 7%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f5ed;
+  transition:
+    background 0.4s ease,
+    box-shadow 0.4s ease,
+    padding 0.4s ease;
 }
+
+.navbar.scrolled {
+  background: rgba(248, 245, 237, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 5px 25px rgba(45, 0, 0, 0.07);
+}
+
+/* Logo */
 
 .navbar-logo img {
   width: 150px;
-  height: auto; 
+  height: auto;
   object-fit: contain;
   display: block;
+  transition: transform 0.4s ease;
 }
+
+.navbar-logo:hover img {
+  transform: scale(1.05);
+}
+
+/* Navigation links */
 
 .nav-links {
-    display: flex; 
-    align-items: center;
-    gap: 42px;
+  display: flex;
+  align-items: center;
+  gap: 42px;
 }
 
-.nav-links a {
+.nav-links a:not(.navbar-logo) {
+  position: relative;
+  padding: 8px 0;
   color: #625448;
   text-decoration: none;
   font-size: 14px;
-  transition: color 0.3s ease;
+  transition:
+    color 0.35s ease,
+    transform 0.35s ease;
 }
 
-.nav-links a:hover {
-  color: #a66b45;
+.nav-links a:not(.navbar-logo)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: #8b2635;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s ease;
+}
+
+.nav-links a:not(.navbar-logo):hover {
+  color: #8b2635;
+  transform: translateY(-2px);
+}
+
+.nav-links a:not(.navbar-logo):hover::after,
+.nav-links a:not(.navbar-logo).active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav-links a.active {
+  color: #8b2635;
+  font-weight: 600;
+}
+
+/* Navigation buttons */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
 }
 
 .nav-button {
@@ -38,105 +99,21 @@
   color: #49382d;
   text-decoration: none;
   font-size: 13px;
-  transition: 0.3s ease;
-}
-
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 25px;
+  transition:
+    background 0.35s ease,
+    color 0.35s ease,
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
 }
 
 .nav-button:hover {
   background: #49382d;
   color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(73, 56, 45, 0.15);
 }
 
-.login-nav-button {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-
-    padding: 11px 23px;
-    border-radius: 30px;
-    border: 1px solid rgba(101, 15, 40, 0.3);
-
-    background: rgba(255, 250, 243, 0.35);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-
-    color: #650f28;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-
-    box-shadow:
-        inset 0 1px 1px rgba(255, 255, 255, 0.7),
-        0 4px 15px rgba(101, 15, 40, 0.08);
-
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.login-nav-button::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    background: radial-gradient(
-        circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        rgba(255, 100, 150, 0.55),
-        rgba(255, 205, 105, 0.4) 25%,
-        rgba(120, 190, 150, 0.35) 45%,
-        rgba(150, 130, 255, 0.3) 65%,
-        transparent 75%
-    );
-
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.login-nav-button span {
-    position: relative;
-    z-index: 1;
-}
-
-.login-nav-button:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 6px 22px rgba(101, 15, 40, 0.15),
-        inset 0 1px 2px rgba(255, 255, 255, 0.8);
-}
-
-.login-nav-button:hover::before {
-    opacity: 1;
-}
-
-.user-name {
-  font-size: 14px;
-  color: #6b3e2e;
-  font-weight: 500;
-}
-
-@media (max-width: 650px) {
-  .navbar {
-    padding: 20px 5%;
-  }
-
-  .nav-links {
-    gap: 15px;
-  }
-
-  .nav-button {
-    display: none;
-  }
-
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 35px; 
-  }
+/* Login and Logout */
 
 .login-nav-button {
   position: relative;
@@ -144,69 +121,104 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  
-  text-decoration: none;
-  color: #650f28;
-  font-size: 13px;
-  font-weight: 600;
-
-  padding: 11px 20px;
-  border: 1px solid rgba(101, 15, 40, 0.3);
+  padding: 11px 23px;
   border-radius: 30px;
-
+  border: 1px solid rgba(101, 15, 40, 0.3);
   background: rgba(255, 250, 243, 0.35);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-
   color: #650f28;
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
-
   box-shadow:
-        inset 0 1px 1px rgba(255, 255, 255, 0.7),
-        0 4px 15px rgba(101, 15, 40, 0.08);
-
-   transition: transform 0.3s ease, box-shadow 0.3s ease;
+    inset 0 1px 1px rgba(255, 255, 255, 0.7),
+    0 4px 15px rgba(101, 15, 40, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .login-nav-button::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    background: radial-gradient(
-        circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        rgba(255, 100, 150, 0.55),
-        rgba(255, 205, 105, 0.4) 25%,
-        rgba(120, 190, 150, 0.35) 45%,
-        rgba(150, 130, 255, 0.3) 65%,
-        transparent 75%
-    );
-
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 100, 150, 0.55),
+    rgba(255, 205, 105, 0.4) 25%,
+    rgba(120, 190, 150, 0.35) 45%,
+    rgba(150, 130, 255, 0.3) 65%,
+    transparent 75%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .login-nav-button span {
-    position: relative;
-    z-index: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .login-nav-button:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 6px 22px rgba(101, 15, 40, 0.15),
-        inset 0 1px 2px rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 22px rgba(101, 15, 40, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .login-nav-button:hover::before {
-    opacity: 1;
+  opacity: 1;
 }
+
+/* Username */
 
 .user-name {
   font-size: 14px;
   color: #6b3e2e;
   font-weight: 500;
 }
+
+/* Responsive */
+
+@media (max-width: 650px) {
+  .navbar {
+    padding: 20px 5%;
+  }
+
+  .navbar-logo img {
+    width: 110px;
+  }
+
+  .nav-links {
+    gap: 15px;
+  }
+
+  .nav-links a:not(.navbar-logo) {
+    font-size: 12px;
+  }
+
+  .nav-button {
+    display: none;
+  }
+
+  .nav-actions {
+    gap: 15px;
+  }
+
+  .login-nav-button {
+    padding: 10px 17px;
+    font-size: 12px;
+  }
+
+  .user-name {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .navbar *,
+  .navbar *::before,
+  .navbar *::after {
+    transition-duration: 0.01ms !important;
+  }
 }

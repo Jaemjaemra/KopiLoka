@@ -1,0 +1,112 @@
+.saved-cafes {
+  min-height: 100vh;
+  padding: 100px 8%;
+  background: #f8f5ed;
+}
+
+.saved-heading {
+  text-align: center;
+  margin-bottom: 55px;
+}
+
+.saved-heading span {
+  color: #8b2635;
+  font-size: 12px;
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+
+.saved-heading h1 {
+  color: #2d0000;
+  font-size: 48px;
+  margin: 15px 0;
+}
+
+.saved-heading p {
+  color: #757d6f;
+  font-size: 16px;
+}
+
+.saved-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.saved-card {
+  background: #fffdf8;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(45, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.saved-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 14px 30px rgba(45, 0, 0, 0.13);
+}
+
+.saved-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.saved-card-content {
+  padding: 24px;
+}
+
+.saved-card-content span {
+  color: #8b2635;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.saved-card-content h3 {
+  color: #2d0000;
+  font-size: 23px;
+  margin: 12px 0;
+}
+
+.saved-card-content p {
+  color: #757d6f;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.saved-card-content button {
+  margin-top: 20px;
+  padding: 11px 18px;
+  border: 1px solid #8b2635;
+  border-radius: 30px;
+  background: transparent;
+  color: #8b2635;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.saved-card-content button:hover {
+  background: #8b2635;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .saved-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .saved-cafes {
+    padding: 80px 6%;
+  }
+
+  .saved-heading h1 {
+    font-size: 36px;
+  }
+
+  .saved-grid {
+    grid-template-columns: 1fr;
+  }
+}

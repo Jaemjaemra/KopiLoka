@@ -1,6 +1,6 @@
 import "./Navbar.css";
 import logo from "../assets/Logo Kopiloka.png"
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, type MouseEvent, type CSSProperties, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import type { User } from "@supabase/supabase-js";
@@ -8,8 +8,74 @@ import type { User } from "@supabase/supabase-js";
 function Navbar() {
   const [mousePosition, setMousePosition] = useState ({ x:50, y: 50});
   const [user, setUser] = useState<User | null>(null);
+  const [activeSection, setActiveSection] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
+  
 
   const navigate = useNavigate();
+
+  const location = useLocation();
+
+  
+  // Detect active section
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setActiveSection("");
+      return;
+    }
+
+    const sections = ["discover", "about", "map"];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-25% 0px -60% 0px",
+      }
+    );
+
+    sections.forEach((id) => {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+  }, [location.pathname]);
+
+  // Detect navbar scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    if (location.hash) {
+      const sectionId = location.hash.substring(1);
+
+      requestAnimationFrame(() => {
+        document.getElementById(sectionId)?.scrollIntoView({
+          behavior: "smooth",
+        });
+      });
+    }
+  }, [location.pathname, location.hash]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -54,14 +120,32 @@ function Navbar() {
     user?.email?.split("@")[0];
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
       <div className="nav-links">
-        <a href="#home" className="navbar-logo">
+        <Link to="/" className="navbar-logo">
           <img src={logo} alt="Kopiloka Logo" />
-        </a>
+        </Link>
 
-        <a href="#discover">Discover</a>
-        <a href="#about">About</a>
+        <Link 
+           to="#discover"
+           className={activeSection === "discover"? "active" : ""}
+           >
+             Discover
+           </Link>
+
+        <Link 
+          to="#about"
+          className={activeSection === "about" ? "active" : ""}
+          >
+            About
+            </Link>
+
+        <Link 
+          to="/#map"
+          className={activeSection === "map" ? "active" : ""}
+            >
+              Map
+              </Link>
       </div>
 
       <div className="nav-actions">
@@ -70,6 +154,10 @@ function Navbar() {
            <span className="user-name">
              Hi, {displayName}
            </span>
+
+           <Link to="/saved-cafes" className="nav-button">
+             Saved Cafes 
+           </Link>
 
             <button
             className="login-nav-button"
@@ -91,9 +179,9 @@ function Navbar() {
         </Link>
         )}
          
-      <a href="#discover" className="nav-button">
+      <Link to="#discover" className="nav-button">
         Explore Cafes
-      </a>
+      </Link>
       </div>
     </nav>
   );
