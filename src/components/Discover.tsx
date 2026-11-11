@@ -21,6 +21,8 @@ function Discover () {
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const [savedCafes, setSavedCafes] = useState<string[]>([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedState, setSelectedState] = useState("All States");
 
     useEffect(() => {
         const fetchCafes = async () => {
@@ -83,16 +85,38 @@ function Discover () {
     }, []);
 
     const nextSlide = () => {
-        setActiveIndex((current) => (current + 1) % cafes.length);
+        setActiveIndex((current) => (current + 1) % filteredCafes.length);
     };
 
     const prevSlide = () => {
-        setActiveIndex((current) =>
-        (current - 1 + cafes.length) % cafes.length
+        setActiveIndex(
+          (current) =>
+        (current - 1 + filteredCafes.length) % filteredCafes.length
         );
     };
 
-    const activeCafe = cafes[activeIndex]; 
+    
+const filteredCafes = cafes.filter((cafe) => {
+  const search = searchTerm.toLowerCase();
+
+  const matchesSearch =
+    cafe.name.toLowerCase().includes(search) ||
+    cafe.city.toLowerCase().includes(search) ||
+    cafe.state.toLowerCase().includes(search);
+
+  const matchesState =
+    selectedState === "All States" ||
+    cafe.state === selectedState;
+
+  return matchesSearch && matchesState;
+});
+
+
+    const activeCafe= filteredCafes[activeIndex] ?? filteredCafes[0];
+
+    useEffect(() => {
+    setActiveIndex(0);
+}, [searchTerm]);
 
     const handleSaveCafe = async (cafeId: string) => {
   const {
@@ -156,6 +180,41 @@ function Discover () {
                 </p>
             </motion.div>
 
+            <div className="discover-search">
+              <span className="search-icon">🔎︎</span>
+
+              <input 
+                type="text"
+                placeholder="Search cafes by name or location..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                />
+
+                {searchTerm && (
+                  <button 
+                    type="button"
+                    onClick={() => setSearchTerm("")}
+                    aria-label="Clear search"
+                    >
+                      ✘
+                    </button>
+                )}
+            </div>
+
+            <div className="discover-filter">
+              <select 
+                value= {selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                >
+                  <option value="All State">All States</option>
+                  {[...new Set(cafes.map((cafe) => cafe.state))].sort().map((state)=> (
+                    <option key={state} value={state}>
+                      {state}
+                    </option>
+                  ))}
+                </select>
+            </div>
+
               {loading ? (
                 <p className="discover-message"> Loading cafes...</p>
               ) : error ? (
@@ -165,6 +224,10 @@ function Discover () {
               ): cafes.length === 0 ? (
                 <p className="discover-message">
                     No cafes available yet. Check back soon!
+                </p>
+              ):filteredCafes.length === 0 ?(
+                <p className="discover-message">
+                  No cafes found. Try another search.
                 </p>
               ):(
 
@@ -182,7 +245,7 @@ function Discover () {
                     <AnimatePresence mode= "wait">
                         <motion.div 
                         
-                          key={activeIndex}
+                          key={activeCafe.id}
                           className="carousel-featured"
                           style={{ 
                             backgroundImage: `url("${activeCafe.image_url}")`,
@@ -219,10 +282,11 @@ function Discover () {
                                 <h3>{activeCafe.name}</h3>
                                 <p>{activeCafe.description}</p>
                                 <motion.button 
-                                className="cafe-button"
-                                whileHover={{ scale: 1.05, x:5 }}
-                                whileTap={{ scale: 0.95}}
-                                transition={{ duration: 0.25}}
+                                  className="cafe-button"
+                                  onClick={() => navigate(`/cafe${activeCafe.id}`)}
+                                  whileHover={{ scale: 1.05, x:5 }}
+                                  whileTap={{ scale: 0.95}}
+                                  transition={{ duration: 0.25}}
                                 >
                                     Explore Cafe 𑄝੭
                                 </motion.button>
@@ -240,7 +304,7 @@ function Discover () {
                 </button>
 
                 <div className="carousel-thumbnails">
-                    {cafes.map((cafe,index) =>(
+                    {filteredCafes.map((cafe,index) =>(
                         <motion.button
                          key={index}
                          className= {`thumbnail ${

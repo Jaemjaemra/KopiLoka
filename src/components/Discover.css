@@ -213,6 +213,166 @@
   animation: heartPop 0.4s ease;
 }
 
+/* Cafe Search */
+.discover-search {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 600px;
+  height: 62px;
+  margin: 0 auto 65px;
+  padding: 0 25px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  background: #fffdf8;
+  border: 1px solid rgba(139, 38, 53, 0.2);
+  border-radius: 50px;
+
+  box-shadow: 0 8px 25px rgba(45, 0, 0, 0.07);
+}
+
+.discover-search:hover {
+  border-color: rgba(139, 38, 53, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(45, 0, 0, 0.09);
+}
+
+.discover-search:focus-within {
+  border-color: #8b2635;
+  box-shadow: 0 8px 28px rgba(139, 38, 53, 0.12);
+}
+
+.search-icon {
+  color: #8b2635;
+  font-size: 27px;
+  display: flex;
+  align-items: center;
+}
+
+.discover-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #2d0000;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.discover-search input::placeholder {
+  color: #a49b8e;
+}
+
+.discover-search button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(139, 38, 53, 0.08);
+  color: #8b2635;
+  font-size: 21px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.discover-search button:hover {
+  background: #8b2635;
+  color: white;
+}
+
+
+/* State Filter */
+.discover-filter {
+  display: flex;
+  justify-content: center;
+  margin: -40px auto 65px;
+  animation: filterEntrance 0.8s ease both;
+}
+
+.discover-filter select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 220px;
+  padding: 15px 48px 15px 22px;
+
+  border: 1px solid rgba(139, 38, 53, 0.25);
+  border-radius: 30px;
+
+  background:
+    linear-gradient(135deg,
+      rgba(255, 253, 248, 0.9),
+      rgba(248, 245, 237, 0.75)
+    );
+
+     backdrop-filter: blur(15px);
+     -webkit-backdrop-filter: blur(15px);
+
+  color: #49382d;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  outline: none;
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 25px rgba(45, 0, 0, 0.07),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+
+  transition:
+    transform 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    background 0.35s ease;
+
+    background-image:
+    linear-gradient(135deg, rgba(255,253,248,0.9), rgba(248,245,237,0.75)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b2635' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+  background-repeat: no-repeat;
+  background-position: center, right 20px center;
+}
+
+.discover-filter select:hover {
+  transform: translateY(-3px);
+  border-color: rgba(139, 38, 53, 0.5);
+
+  box-shadow:
+    0 12px 28px rgba(45, 0, 0, 0.11),
+    0 0 18px rgba(139, 38, 53, 0.08);
+}
+
+.discover-filter select:focus {
+ border-color: #8b2635;
+
+  box-shadow:
+    0 8px 25px rgba(139, 38, 53, 0.13),
+    0 0 0 4px rgba(139, 38, 53, 0.08);
+}
+
+.discover-filter select option {
+  background: #fffdf8;
+  color: #49382d;
+}
+
+@keyframes filterEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 @keyframes heartPop {
   0% {
     transform: scale(1);
@@ -230,6 +390,7 @@
     transform: scale(1);
   }
 }
+
 
 @media (max-width: 768px) {
   .discover {
@@ -283,5 +444,38 @@
     top: 16px;
     right: 16px;
     font-size: 25px;
+  }
+
+  /* Search - Mobile */
+  .discover-search {
+    max-width: 100%;
+    height: 55px;
+    margin: 30px auto 45px;
+    padding: 0 18px;
+  }
+
+  .discover-search input {
+    font-size: 13px;
+  }
+
+  /* State Filter - Mobile */
+  .discover-filter {
+    margin: -25px auto 45px;
+  }
+
+  .discover-filter select {
+    width: 100%;
+    max-width: 280px;
+    padding: 13px 45px 13px 20px;
+    font-size: 13px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .discover-filter,
+  .discover-filter select {
+    animation: none;
+    transition: none;
   }
 }

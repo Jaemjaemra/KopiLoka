@@ -8,6 +8,7 @@ import Map from "./components/Maps";
 import Login, { Register } from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SavedCafes from "./pages/SavedCafes";
+import CafeDetails from "./pages/CafeDetails";
 
 import "./App.css";
 
@@ -29,6 +30,8 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      <Route path ="/cafe/:id" element={<CafeDetails />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/saved-cafes" element={<SavedCafes />} />
