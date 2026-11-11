@@ -14,6 +14,7 @@ type Cafe = {
   description: string;
   image_url: string;
   google_maps_url: string | null;
+  opening_hours: string | null;
 };
 
 function CafeDetails() {
@@ -34,7 +35,7 @@ function CafeDetails() {
 
       const { data, error } = await supabase
         .from("cafes")
-        .select("id, name, address, city, state, description, image_url, google_maps_url")
+        .select("id, name, address, city, state, description, image_url, google_maps_url,opening_hours")
         .eq("id", id)
         .eq("status", "approved")
         .single();
@@ -177,6 +178,31 @@ const handleSaveCafe = async () => {
                    </a>
                   )}
               </div>
+
+              <div className="details-opening-hours">
+                <h3>Opening Hours</h3>
+
+                {cafe.opening_hours ? (
+                  <div className="opening-hours-list">
+                    {cafe.opening_hours.split("\n").map((hours, index) => {
+                      const [day,time] = hours.split(": ");
+
+                      return(
+                        <div className="opening-hours-row" key={index}>
+                          <span>{day}</span>
+                          <span className={time === "Closed" ? "closed" : ""}>
+                            {time}
+                          </span>
+                        </div>
+                      );
+                    })}
+              </div>
+                ):(
+                  <p className="hours-unvailable">
+                    Opening hours are not available.
+                  </p>
+                )}
+            </div>
             </div>
           </section>
         )}
