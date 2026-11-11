@@ -12,6 +12,7 @@ type Cafe = {
     state: string;
     description: string;
     image_url: string;
+    google_maps_url: string | null;
 };
 
 function Discover () {
@@ -28,7 +29,7 @@ function Discover () {
         const fetchCafes = async () => {
             const { data, error } = await supabase
               .from("cafes")
-              .select("id, name, address, city, state, description, image_url")
+              .select("id, name, address, city, state, description, image_url,google_maps_url")
               .eq("status", "approved")
               .order("created_at", { ascending: true });
 
@@ -283,13 +284,23 @@ const filteredCafes = cafes.filter((cafe) => {
                                 <p>{activeCafe.description}</p>
                                 <motion.button 
                                   className="cafe-button"
-                                  onClick={() => navigate(`/cafe${activeCafe.id}`)}
+                                  onClick={() => navigate(`/cafe/${activeCafe.id}`)}
                                   whileHover={{ scale: 1.05, x:5 }}
                                   whileTap={{ scale: 0.95}}
                                   transition={{ duration: 0.25}}
                                 >
                                     Explore Cafe 𑄝੭
                                 </motion.button>
+                                {activeCafe.google_maps_url && (
+                                  <a
+                                  href={activeCafe.google_maps_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="google-maps-button"
+                                  >
+                                    View on Google Maps ↗
+                                    </a>
+                                  )}
                             </motion.div>
                         </motion.div>
                     </AnimatePresence>

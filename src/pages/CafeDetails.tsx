@@ -13,8 +13,6 @@ type Cafe = {
   state: string;
   description: string;
   image_url: string;
-  lat: number | null;
-  long: number | null;
   google_maps_url: string | null;
 };
 
@@ -36,13 +34,14 @@ function CafeDetails() {
 
       const { data, error } = await supabase
         .from("cafes")
-        .select("id, name, address, city, state, description, image_url, lat, long, google_maps_url")
+        .select("id, name, address, city, state, description, image_url, google_maps_url")
         .eq("id", id)
         .eq("status", "approved")
         .single();
 
       if (error) {
-        setError("Unable to load cafe details.");
+        console.error("Cafe fetch error:", error);
+        setError(error.message);
       } else {
         setCafe(data);
       }
